@@ -1,0 +1,8 @@
+{
+  "theme": "custom:opencode",
+  "statusLine": {
+    "type": "command",
+    "command": "H=${CLAUDE_CONFIG_DIR:-$HOME/.claude}; node \"$H/hud/hud-data.mjs\" | perl \"$H/claudzilla-theme/hud-filter.pl\"",
+    "refreshInterval": 1
+  }
+}

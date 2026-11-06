@@ -1,0 +1,21 @@
+{
+  "name": "OpenCode",
+  "base": "dark",
+  "overrides": {
+    "claude": "#fab283",
+    "claudeShimmer": "#fcd2b4",
+    "success": "#7fd88f",
+    "error": "#e06c75",
+    "warning": "#f5a742",
+    "warningShimmer": "#f8c27e",
+    "suggestion": "#fab283",
+    "planMode": "#9d7cd8",
+    "promptBorder": "#484848",
+    "selectionBg": "#2a3a55",
+    "bashMessageBackgroundColor": "#1e1e1e",
+    "memoryBackgroundColor": "#1e1e1e",
+    "composerSidebarBackground": "#0a0a0a",
+    "diffAdded": "#20303b",
+    "diffRemoved": "#37222c"
+  }
+}
