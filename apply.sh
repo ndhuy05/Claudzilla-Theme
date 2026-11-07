@@ -60,6 +60,6 @@ fs.writeFileSync(dst,JSON.stringify({...cur,...add,hud:{...cur.hud,...add.hud}},
 # Margin panel: its fixed colors to the opencode palette. DIM holds the same colors at 60%, for divider lines.
 # The panel loads from the clone, so this shows from the next session or /reload-plugins.
 perl -i -pe '
-  $n += s/^const HUD = \{.*\}$/const HUD = { label: "#9d7cd8", faint: "#606060", idle: "#5c9cf5", action: "#7fd88f", compacted: "#f5a742", dirty: "#f5a742", churn: "#7fd88f", latest: "#e5c07b" }/;
+  $n += s/^const HUD = \{.*\}$/const HUD = { label: "#9d7cd8", faint: "#808080", idle: "#5c9cf5", action: "#7fd88f", compacted: "#f5a742", dirty: "#f5a742", churn: "#7fd88f", latest: "#e5c07b" }/;
   $n += s/^const DIM = \{.*\}$/const DIM = { label: "#5e4a82", action: "#4c8256", compacted: "#936428" }/;
   END { die "apply.sh: expected 2 color lines in register.tsx, changed $n\n" if $n != 2 }' "$CZ/$MARGIN"

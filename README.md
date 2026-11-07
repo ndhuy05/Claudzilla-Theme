@@ -7,7 +7,7 @@ A personal look for [claudzilla](https://github.com/HT0710/claudzilla) on top of
 | Part | Change |
 | --- | --- |
 | Claude Code theme | A custom theme named `opencode`, based on `dark`, with opencode's colors. |
-| Status line | A compact layout with block bars, full labels (`context`, `cache`, `weekly`) and bars of equal length. Each bar is teal, turns amber at 70% and red at 90%. The email, time, date, session ID, session name and session time are hidden, and the animations are off. |
+| Status line | A compact layout with solid line bars, full labels (`context`, `cache`, `weekly`) and bars of equal length. Each bar is teal, turns amber at 50% and red above 80%. Only the git changes stand out on the top row: the path is plain text, the branch is purple and the version is grey. The email, time, date, session ID, session name and session time are hidden, and the animations are off. |
 | Margin panel | Its fixed colors (labels, faint text, rewind and done marks) use the opencode palette. |
 
 ## Files

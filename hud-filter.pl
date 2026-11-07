@@ -1,7 +1,7 @@
 #!/usr/bin/perl -0777
 # hud-data.mjs key/value lines -> E2 layout: identity row, rule, meters in two columns (ctx over cch | 5h over wk), rule, activity row.
 # hud.compact in claudzilla.json: no rules, and all meters on one row when the width allows.
-# Personal copy of claudzilla's claude/hud/hud-filter.pl: opencode palette, block bars, no email, time, date or session info.
+# Personal copy of claudzilla's claude/hud/hud-filter.pl: opencode palette, line bars, no email, time, date or session info.
 use strict; use warnings;
 # This copy lives outside the clone, so the version and trace.pl are read from the clone the hud link points into.
 use Cwd 'abs_path';
@@ -30,8 +30,8 @@ my ($G_ON, $G_OFF, $G_BRANCH, $G_SKILL, $G_CACHE) =
     -e (($ENV{CLAUDE_CONFIG_DIR} // "$ENV{HOME}/.claude") . '/.claudzilla-basic-glyphs')
     ? ("\x{25A0}", "\x{25A1}", "\x{203A}", "\x{25B8}", "\x{25A0}")
     : ("\x{25B0}", "\x{25B1}", "\x{2387}", "\x{2691}", "\x{25AC}");
-# block bars: every mono font has them, so no fallback needed
-($G_ON, $G_OFF, $G_CACHE) = ("\x{2588}", "\x{2591}", "\x{2588}");
+# line bars, filled and empty alike: every mono font has them, so no fallback needed
+($G_ON, $G_OFF, $G_CACHE) = ("\x{2501}", "\x{2501}", "\x{2501}");
 
 my %f = map { /^([^\t]+)\t(.*)$/ ? ($1, $2) : () } split /\n/, $txt;
 my ($id, $META_CWD, $EFFORT, $SID) = @f{qw(id cwd effort sid)};
@@ -108,11 +108,11 @@ sub paint {                     # [char, r, g, b] cells -> string, colour code o
     return $out . "\e[0m";
 }
 my $WID = 10;   # highlight half-width in cells
-# one solid colour per bar, by level: teal, orange from 70%, red from 90%
+# one solid colour per bar, by level: teal, amber from 50%, red above 80%
 # meter titles in full; $LW fits the longest, so stacked bars line up
 my %NAME = (cch => 'cache', ctx => 'context', wk => 'weekly');
 my $LW = 7;
-sub level { my $p = shift // 0; $p >= 90 ? [224,108,117] : $p >= 70 ? [245,167,66] : [86,182,194] }
+sub level { my $p = shift // 0; $p > 80 ? [224,108,117] : $p >= 50 ? [245,167,66] : [86,182,194] }
 # builds a whole meter row as cells, then runs the highlight across all of it -
 # title, bar, figure and note alike. $head is the sweep centre, undef while resting.
 sub meter_line {
@@ -128,7 +128,7 @@ sub meter_line {
     for my $i (0 .. $n-1) {                                                   # bar
         my $on = $i < $f;
         push @cell, [$cache ? $G_CACHE : $on ? $G_ON : $G_OFF,
-                     $on ? $cc : [60,60,60],
+                     $on ? $cc : [42,42,42],
                      $on ? 0.65 : 0.30];
     }
     my $fc = $wait ? [128,128,128] : $cc;                                     # figure
@@ -158,18 +158,18 @@ my @out;
 
 # identity: path + branch + session id, profile flush right
 # cwd: one solid colour
-sub cwd_str { "\e[38;2;22;198;12m$_[0]\e[0m" }
+sub cwd_str { "\e[38;2;238;238;238m$_[0]\e[0m" }
 {   # narrow panes: shed the least important pieces, then trim the path itself
     my $path = $cwd // '~';
     my $p    = '';   # account email hidden
-    my @opt = ( [$branch, sub { $dim->('  ') . "\e[38;2;92;156;245m$G_BRANCH $_[0]\e[0m" }],
+    my @opt = ( [$branch, sub { $dim->('  ') . "\e[38;2;157;124;216m$G_BRANCH $_[0]\e[0m" }],
                 [$dirty,  sub { $dim->(' ')  . "\e[38;2;245;167;66m$_[0]\e[0m"  }],
                 [$churn,  sub { $dim->('  ') . "\e[38;2;127;216;143m$_[0]\e[0m" }] );
     my $build = sub {
         my $l = cwd_str($path);
         for my $o (@opt) { $l .= $o->[1]->($o->[0]) if defined $o->[0] }
         my $r = $p ne '' ? "\e[38;2;95;158;168m$p\e[0m" : '';
-        $r .= ($r ne '' ? $dim->('  ') : '') . "\e[38;2;250;178;131m$ver\e[0m" if defined $ver;
+        $r .= ($r ne '' ? $dim->('  ') : '') . "\e[38;2;128;128;128m$ver\e[0m" if defined $ver;
         return ($l, $r);
     };
     my $fits = sub { fits($build->()) };
@@ -325,9 +325,9 @@ push @out, rule(3) unless $f{compact};
 # activity: model, skill, thinking; uptime flush right
 {   # same treatment as the identity row, measured on the rendered strings
     my $mo = $model;
-    $mo .= "\e[38;2;128;128;128m  $EFFORT\e[0m" if defined $mo && $EFFORT;
+    $mo .= "\e[38;2;245;167;66m  $EFFORT\e[0m" if defined $mo && $EFFORT;
     my @L = ( [$mo,       sub { "\e[38;2;238;238;238m$_[0]\e[0m" }],
-              [$skill,    sub { "\e[38;2;128;128;128m$G_SKILL $_[0]\e[0m" }],
+              [$skill,    sub { "\e[38;2;102;102;102m$G_SKILL $_[0]\e[0m" }],
               [$thinking, sub { "\e[38;2;157;124;216m\x{25C7} thinking\e[0m" }] );
     my $clock;   # time and date hidden
     my @R = ( [$clock,    sub { "\e[38;2;128;128;128m$_[0]\e[0m" }],
