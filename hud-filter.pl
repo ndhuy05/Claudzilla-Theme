@@ -291,14 +291,18 @@ if ($ONE) {
     my $x = 0;
     my @hs = heads(1);      # middle row: the spin's row scale is 1, so it reaches both ends
     my @cols;
-    # same bar length in every column: shared label, figure and note widths, bar sized to the narrowest column
+    # same bar length in every column, sized for the longest label and note; each label and note keeps
+    # its own width, so the bar sits right after its label and the slack goes before the divider
     my $nw = 0; for (@one) { (my $t = $_->[2]) =~ s/^ +//; $nw = length $t if length $t > $nw }
     my $bar = int($room / @one) - 5 - $LW - 3 - $nw;
     for my $i (0 .. $#one) {
         my $col = int($room * ($i + 1) / @one) - int($room * $i / @one);
         my ($label, $pct, $note) = @{$one[$i]};
         $note =~ s/^ +//;
-        push @cols, meter_line($label, $pct, $note, $bar, $nw, $LW, 3, map { $_ - $x } @hs);
+        my $lw = length($NAME{$label} // $label);
+        my $pad = $col - ($lw + 1 + $bar + 7 + length $note);
+        push @cols, meter_line($label, $pct, $note, $bar, length $note, $lw, 3, map { $_ - $x } @hs)
+                  . ' ' x ($pad > 0 ? $pad : 0);
         $x += $col + 3;
     }
     push @out, join($DIV, @cols);
