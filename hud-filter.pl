@@ -292,7 +292,8 @@ if ($ONE) {
     my @hs = heads(1);      # middle row: the spin's row scale is 1, so it reaches both ends
     my @cols;
     # same bar length in every column, sized for the longest label and note; each label and note keeps
-    # its own width, so the bar sits right after its label and the slack goes before the divider
+    # its own width, so the bar sits right after its label. The row's slack is shared out evenly
+    # on both sides of every divider.
     my $nw = 0; for (@one) { (my $t = $_->[2]) =~ s/^ +//; $nw = length $t if length $t > $nw }
     my $bar = int($room / @one) - 5 - $LW - 3 - $nw;
     for my $i (0 .. $#one) {
@@ -300,12 +301,12 @@ if ($ONE) {
         my ($label, $pct, $note) = @{$one[$i]};
         $note =~ s/^ +//;
         my $lw = length($NAME{$label} // $label);
-        my $pad = $col - ($lw + 1 + $bar + 7 + length $note);
-        push @cols, meter_line($label, $pct, $note, $bar, length $note, $lw, 3, map { $_ - $x } @hs)
-                  . ' ' x ($pad > 0 ? $pad : 0);
+        push @cols, meter_line($label, $pct, $note, $bar, length $note, $lw, 3, map { $_ - $x } @hs);
         $x += $col + 3;
     }
-    push @out, join($DIV, @cols);
+    my $slack = $W - 3 * $#cols; $slack -= vis($_) for @cols;
+    my $gap = @cols > 1 && $slack > 0 ? ' ' x int($slack / (2 * $#cols)) : '';
+    push @out, join($gap . $DIV . $gap, @cols);
 } elsif ($TWO) {
     # a missing meter leaves its slot blank
     my $nr = $CRW - ($LW + 1) - 5 - 2 - $twr;
