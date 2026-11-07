@@ -158,7 +158,7 @@ my @out;
 
 # identity: path + branch + session id, profile flush right
 # cwd: one solid colour
-sub cwd_str { "\e[38;2;127;216;143m$_[0]\e[0m" }
+sub cwd_str { "\e[38;2;22;198;12m$_[0]\e[0m" }
 {   # narrow panes: shed the least important pieces, then trim the path itself
     my $path = $cwd // '~';
     my $p    = '';   # account email hidden
