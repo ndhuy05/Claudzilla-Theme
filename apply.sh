@@ -11,8 +11,8 @@ MARGIN=plugins/margin/hooks/register.tsx
 [ -d "$DEST/hud" ] && [ -d "$DEST/themes" ] ||
   { echo "apply.sh: claudzilla's hud part is missing; run $CZ/install.sh --add hud first" >&2; exit 1; }
 
-# The panel recolor below leaves the clone modified, which stops claudzilla's auto-update.
-# So this script is the update path: undo the recolor, update, then recolor again.
+# Older versions of this script recolored the panel by editing the clone, which stops claudzilla's auto-update.
+# Undo that edit; the colors now come from the palette key in claudzilla.json.
 # It refuses when the file holds edits other than the two recolored lines, so nothing else is lost.
 if ! git -C "$CZ" diff --quiet -- "$MARGIN"; then
   if git -C "$CZ" diff -U0 -- "$MARGIN" | grep -vE '^(\+\+\+|---) ' | grep -E '^[+-]' |
@@ -56,10 +56,3 @@ fs.writeFileSync(dst,JSON.stringify({...cur,...add,hud:{...cur.hud,...add.hud}},
 
 # Merges settings.overrides.json into settings.json.
 "$CZ/install.sh" "$@"
-
-# Margin panel: its fixed colors to the opencode palette. DIM holds the same colors at 60%, for divider lines.
-# The panel loads from the clone, so this shows from the next session or /reload-plugins.
-perl -i -pe '
-  $n += s/^const HUD = \{.*\}$/const HUD = { label: "#9d7cd8", faint: "#808080", idle: "#5c9cf5", action: "#7fd88f", compacted: "#f5a742", dirty: "#f5a742", churn: "#7fd88f", latest: "#e5c07b" }/;
-  $n += s/^const DIM = \{.*\}$/const DIM = { label: "#5e4a82", action: "#4c8256", compacted: "#936428" }/;
-  END { die "apply.sh: expected 2 color lines in register.tsx, changed $n\n" if $n != 2 }' "$CZ/$MARGIN"

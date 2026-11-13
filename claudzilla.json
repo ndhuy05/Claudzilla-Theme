@@ -1,1 +1,19 @@
-{ "hud": { "compact": true } }
+{
+  "hud": {
+    "compact": true
+  },
+  "palette": {
+    "shared": {
+      "label": "#9d7cd8",
+      "faint": "#808080",
+      "idle": "#5c9cf5",
+      "action": "#7fd88f",
+      "dirty": "#f5a742",
+      "churn": "#7fd88f"
+    },
+    "margin": {
+      "compacted": "#f5a742",
+      "latest": "#e5c07b"
+    }
+  }
+}
